@@ -95,15 +95,15 @@ def generate_source_ip_log(ip_address):
     """
     # TODO: Complete function body per step 11
     # Get all records that have the specified source IP address
-    regex_filter_2 = "^.{6} .* SRC=" + f"{ip_address} .* "
+    regex_filter_2 = "^(.{6} .* SRC=" + f"{ip_address} .* )"
     ip_report_record = la.filter_log_by_regex(log_path, regex_filter_2)
 
     # Save all records to a plain text .txt file
 
     ip_report_df = pd.DataFrame(ip_report_record)
-    ip_sub_2 = re.sub('\\.', '_', ip_address)
-    ip_report_name = f"source_ip_{ip_sub_2}.txt"
-    ip_report_csv = ip_report_df.to_csv(ip_report_name, index=False)
+    ip_sub = re.sub('\\.', '_', ip_address)
+    ip_report_name = f"source_ip_{ip_sub}.txt"
+    ip_report_csv = ip_report_df.to_csv(ip_report_name, header=False, index=False)
 
     return ip_report_csv
 
