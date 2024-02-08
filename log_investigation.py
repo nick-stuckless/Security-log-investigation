@@ -10,6 +10,8 @@ Parameters:
 """
 import log_analysis_lib as la
 import pandas as pd
+import re
+
 
 # Get the log file path from the command line
 # Because this is outside of any function, log_path is a global variable
@@ -26,7 +28,8 @@ def main():
             generate_port_traffic_report(port)
 
     # Generate report of invalid user login attempts
-    generate_invalid_user_report()
+    generate_invalid_user_report(log_path)
+    
 
     # Generate log of records from source IP 220.195.35.40
     generate_source_ip_log('220.195.35.40')
@@ -66,14 +69,22 @@ def generate_port_traffic_report(port_number):
     report_csv = report_df.to_csv(report_filemame, header=report_header, index=False)
     return report_csv
 
-def generate_invalid_user_report():
+def generate_invalid_user_report(log_path):
     """Produces a CSV report of all network traffic in a log file that show
     an attempt to login as an invalid user.
     """
     # TODO: Complete function body per step 10
     # Get data from records that show attempted invalid user login
+    regex_filter = "^(.{6}) (.*) myth.* user (.*) from (.*)"
+    whatever, inv_report_record = la.filter_log_by_regex(log_path, regex_filter)
+
     # Generate the CSV report
-    return
+    inv_report_df = pd.DataFrame(inv_report_record)
+    inv_report_header = ('Date', 'Time', 'Username', 'IP Address')
+    inv_report_name = "invalid_users.csv"
+    inv_report_csv = inv_report_df.to_csv(inv_report_name, header=inv_report_header, index=False)
+
+    return inv_report_csv
 
 def generate_source_ip_log(ip_address):
     """Produces a plain text .log file containing all records from a source log
@@ -84,8 +95,17 @@ def generate_source_ip_log(ip_address):
     """
     # TODO: Complete function body per step 11
     # Get all records that have the specified source IP address
+    regex_filter_2 = "^.{6} .* SRC=" + f"{ip_address} .* "
+    ip_report_record = la.filter_log_by_regex(log_path, regex_filter_2)
+
     # Save all records to a plain text .txt file
-    return
+
+    ip_report_df = pd.DataFrame(ip_report_record)
+    ip_sub_2 = re.sub('\\.', '_', ip_address)
+    ip_report_name = f"source_ip_{ip_sub_2}.txt"
+    ip_report_csv = ip_report_df.to_csv(ip_report_name, index=False)
+
+    return ip_report_csv
 
 if __name__ == '__main__':
     main()
