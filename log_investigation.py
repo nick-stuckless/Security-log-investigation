@@ -105,6 +105,17 @@ def generate_source_ip_log(ip_address):
     ip_report_name = f"source_ip_{ip_sub}.txt"
     ip_report_csv = ip_report_df.to_csv(ip_report_name, header=False, index=False)
 
+    with open(f'{ip_report_name}', 'r') as file:
+    
+        ip_report_content = file.read()
+
+    captures = ip_report_content.split(',')
+
+    output = '\n'.join(captures)
+
+    with open(f'{ip_report_name}', 'w') as file:
+        file.write(output)
+
     return ip_report_csv
 
 if __name__ == '__main__':
